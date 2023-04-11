@@ -66,7 +66,7 @@ const updateBank = async (req, res) => {
     
     //cannot update default value
     if (bank_id == 1) {
-      return res.status(405).send("ไม่สามารถแก้ไขค่าเริ่มต้นได้");
+      return res.status(400).send("ไม่สามารถแก้ไขค่าเริ่มต้นได้");
     }
 
     //validate form
@@ -104,7 +104,7 @@ const removeBank = async(req, res) => {
 
     //cannot remove default value
     if (bank_id == 1) {
-      return res.status(405).send("ไม่สามารถแก้ไขค่าเริ่มต้นได้");
+      return res.status(400).send("ไม่สามารถลบค่าเริ่มต้นได้");
     }
 
     const remove = await Bank.destroy({

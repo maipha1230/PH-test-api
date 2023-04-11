@@ -10,7 +10,11 @@ router.post("/create-user", authService.adminVerify, userController.createUser);
 router.get("/get-users", authService.adminVerify, userController.getUsers);
 
 //get user by id
-router.get("/get-user/:user_id", authService.adminVerify, userController.getUserById)
+router.get(
+  "/get-user/:user_id",
+  authService.adminVerify,
+  userController.getUserById
+);
 
 //update user
 router.put(
@@ -27,6 +31,24 @@ router.delete(
 );
 
 //change user status
-router.put("/change-user-status/:user_id", authService.adminVerify, userController.changeUserStatus)
+router.put(
+  "/change-user-status/:user_id",
+  authService.adminVerify,
+  userController.changeUserStatus
+);
+
+//get user hospital
+router.get(
+  "/get-user-hospital/:user_id",
+  authService.adminVerify,
+  userController.getUserHospital
+);
+
+//add or remove user hospital
+router.post(
+  "/add-remove-user-hospital/:user_id/:hospital_id",
+  authService.adminVerify,
+  userController.addOrRemoveUserHospital
+);
 
 module.exports = router;

@@ -1,4 +1,4 @@
-const { User } = require("../model/index.model");
+const { User, Hospital, UserHospital } = require("../model/index.model");
 const { joiException } = require("../services/exception");
 const { validateUser } = require("../services/validator");
 const { Op } = require("sequelize");
@@ -200,6 +200,65 @@ const changeUserStatus = async(req, res) => {
   }
 }
 
+const getUserHospital = async(req, res) => {
+  try {
+    const user_id = req.params.user_id
+
+    //no user id
+    if (!user_id) {
+      return res.status(400).send("ไม่พบผู้ใช้งาน")
+    }
+
+    //return user hospital list
+    const userHospital = await UserHospital.findAll({
+      where: {
+        user_id: user_id
+      }
+    })
+
+    //return hospital list
+    const hospitals  = await Hospital.findAll()
+    
+    return res.status(200).send({user_hospital: userHospital, hospitals: hospitals} )
+  } catch (error) {
+    return res.status(500).send(error.message)
+  }
+}
+
+const addOrRemoveUserHospital = async(req, res) => {
+  try {
+    const user_id = req.params.user_id
+    if (!user_id) {
+      return res.status(400).send("ไม่พบผู้ใช้งาน")
+    }
+
+    const hospital_id = req.params.hospital_id
+    if (!hospital_id) {
+      return res.status(400).send("ไม่พบโรงพยาบาล")
+    }
+
+    const isWorking = req.body.isWorking
+
+    if (isWorking) {
+      const add = await UserHospital.create({
+        user_id: user_id,
+        hospital_id: hospital_id
+      })
+      return res.status(200).send("เพิ่มเข้ารายการบรรจุสำเร็จ")
+    } else {
+      const remove = await UserHospital.destroy({
+        where: {
+          user_id: user_id,
+          hospital_id: hospital_id
+        }
+      })
+      return res.status(200).send("นำออกจากรายการบรรจุสำเร็จ")
+    }
+  } catch (error) {
+    return res.status(500).send(error.message)
+  }
+}
+
 
 
 module.exports = {
@@ -208,5 +267,7 @@ module.exports = {
   updateUser: updateUser,
   removeUser: removeUser,
   getUserById: getUserById,
-  changeUserStatus: changeUserStatus
+  changeUserStatus: changeUserStatus,
+  getUserHospital: getUserHospital,
+  addOrRemoveUserHospital: addOrRemoveUserHospital
 };
