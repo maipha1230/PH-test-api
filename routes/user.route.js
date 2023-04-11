@@ -26,4 +26,7 @@ router.delete(
   userController.removeUser
 );
 
+//change user status
+router.put("/change-user-status/:user_id", authService.adminVerify, userController.changeUserStatus)
+
 module.exports = router;

@@ -11,12 +11,12 @@ module.exports = {
 
       //check token exist
       if (!token) {
-        return res.status(401).send("Please Sign in.");
+        return res.status(401).send("กรุณาเข้าสู่ระบบ");
       }
 
       jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
         if (err) {
-          return res.status(401).send("Please Sign in.");
+          return res.status(401).send("กรุณาเข้าสู่ระบบ");
         }
 
         const admin = await Admin.findOne({
@@ -27,7 +27,7 @@ module.exports = {
 
         //check if exist
         if (!admin) {
-          return res.status(401).send("No User Exist.");
+          return res.status(401).send("ไม่พบผู้ใข้งาน");
         }
 
         res.locals.admin_auth = {
@@ -37,7 +37,7 @@ module.exports = {
         next();
       });
     } catch (error) {
-        return res.status(401).send("Please sign in.")
+        return res.status(401).send("กรุณาเข้าสู่ระบบ")
     }
   },
 };

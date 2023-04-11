@@ -1,4 +1,5 @@
 const { Hospital } = require("../model/index.model");
+const { joiException } = require("../services/exception");
 const { validateHospital } = require("../services/validator");
 const { Op } = require("sequelize");
 
@@ -16,15 +17,17 @@ const getHospitalById = async (req, res) => {
     const hospital_id = req.params.hospital_id;
     // no user id
     if (!hospital_id) {
-      return res.status(400).send("Please Try Again.");
+      return res.status(400).send("เกิดข้อผิดพลาด ลองอีกครั้ง");
     }
 
     const hospital = await Hospital.findOne({
-      hospital_id: hospital_id,
+      where: {
+        hospital_id: hospital_id,
+      } 
     });
 
     if (!hospital) {
-      return res.status(404).send("No Hospital Found.");
+      return res.status(400).send("ไม่พบโรงพยาบาล");
     }
 
     return res.status(200).send(hospital);
@@ -38,7 +41,7 @@ const createHospital = async (req, res) => {
     //validate form
     const { error } = validateHospital(req.body);
     if (error) {
-      return res.status(400).send(error.details);
+      return res.status(400).send(joiException(error.details));
     }
 
     const { hospital_code, hospital_name_th, hospital_name_en } = req.body;
@@ -50,7 +53,7 @@ const createHospital = async (req, res) => {
     });
     // if Hospital Code Already Use
     if (exist) {
-      return res.status(400).send("Hospital Already Use.");
+      return res.status(400).send("รหัสโรงพยาบาลนี้ถูกใช้งานแล้ว");
     }
 
     //insert data into database
@@ -60,7 +63,7 @@ const createHospital = async (req, res) => {
       hospital_name_en: hospital_name_en,
     });
 
-    return res.status(201).send(hospital);
+    return res.status(201).send("เพิ่มโรงพยาบาลสำเร็จ");
   } catch (error) {
     return res.status(500).send(error.message);
   }
@@ -68,15 +71,16 @@ const createHospital = async (req, res) => {
 
 const updateHospital = async (req, res) => {
   try {
+    console.log(req.body);
     const hospital_id = req.params.hospital_id;
     // no user id
     if (!hospital_id) {
-      return res.status(400).send("Please Try Again.");
+      return res.status(400).send("เกิดข้อผิดพลาด ลองอีกครั้ง");
     }
 
     const { error } = validateHospital(req.body);
     if (error) {
-      return res.status(400).send(error.details);
+      return res.status(400).send(joiException(error.details));
     }
 
     const { hospital_code, hospital_name_th, hospital_name_en } = req.body;
@@ -90,7 +94,7 @@ const updateHospital = async (req, res) => {
     });
 
     if (exist) {
-      return res.status(400).send("Hospital Code Already Use.");
+      return res.status(400).send("รหัสโรงพยาบาลนี้ถูกใช้งานแล้ว");
     }
 
     //update data
@@ -107,7 +111,7 @@ const updateHospital = async (req, res) => {
       }
     );
 
-    return res.status(201).send(hospital);
+    return res.status(201).send("แก้ไขโรงพยาบาลสำเร็จ");
   } catch (error) {
     return res.status(500).send(error.message);
   }
@@ -118,7 +122,7 @@ const removeHospital = async (req, res) => {
     const hospital_id = req.params.hospital_id;
     // no user id
     if (!hospital_id) {
-      return res.status(400).send("Please Try Again.");
+      return res.status(400).send("เกิดข้อผิดพลาด ลองอีกครั้ง");
     }
 
     const remove = await Hospital.destroy({
@@ -128,10 +132,10 @@ const removeHospital = async (req, res) => {
     });
 
     if (!remove) {
-      return res.status(404).send("No Hospital Found.");
+      return res.status(400).send("ไม่พบโรงพยาบาล");
     }
 
-    return res.status(200).send("Remove Hospital Success");
+    return res.status(200).send("ลบโรงพยาบาลสำเร็จ");
   } catch (error) {
     return res.status(500).send(error.message);
   }

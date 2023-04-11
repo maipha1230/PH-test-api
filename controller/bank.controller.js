@@ -1,4 +1,5 @@
 const { Bank } = require("../model/index.model");
+const { joiException } = require("../services/exception");
 const { validateBank } = require("../services/validator");
 const { Op } = require("sequelize");
 
@@ -7,7 +8,7 @@ const createBank = async (req, res) => {
     //validate form
     const { error } = validateBank(req.body);
     if (error) {
-      return res.status(400).send(error.details);
+      return res.status(400).send(joiException(error.details));
     }
 
     const { bank_name_th, bank_name_en } = req.body;
@@ -15,7 +16,7 @@ const createBank = async (req, res) => {
       bank_name_th: bank_name_th,
       bank_name_en: bank_name_en,
     });
-    return res.status(201).send(bank);
+    return res.status(201).send("เพิ่มธนาคารสำเร็จ");
   } catch (error) {
     return res.status(500).send(error.message);
   }
@@ -37,7 +38,7 @@ const getBankById = async (req, res) => {
     //validate params
     const bank_id = req.params.bank_id;
     if (!bank_id) {
-      return res.status(400).send("Please Try Again");
+      return res.status(400).send("เกิดข้อผิดพลาด ลองอีกครั้ง");
     }
 
     //find bank
@@ -47,7 +48,7 @@ const getBankById = async (req, res) => {
       },
     });
     if (!bank) {
-      return res.status(404).send("No Bank Found.");
+      return res.status(400).send("ไม่พบธนาคาร");
     }
     return res.status(200).send(bank);
   } catch (error) {
@@ -60,18 +61,18 @@ const updateBank = async (req, res) => {
     //validate params
     const bank_id = req.params.bank_id;
     if (!bank_id) {
-      return res.status(400).send("Please Try Again");
+      return res.status(400).send("เกิดข้อผิดพลาด ลองอีกครั้ง");
     }
     
     //cannot update default value
     if (bank_id == 1) {
-      return res.status(405).send("Cannot Update Default Value");
+      return res.status(405).send("ไม่สามารถแก้ไขค่าเริ่มต้นได้");
     }
 
     //validate form
     const { error } = validateBank(req.body);
     if (error) {
-      return res.status(400).send(error.details);
+      return res.status(400).send(joiException(error.details));
     }
 
     //update bank data
@@ -87,7 +88,7 @@ const updateBank = async (req, res) => {
         },
       }
     );
-    return res.status(200).send(bank)
+    return res.status(201).send("แก้ไขธนาคารสำเร็จ")
   } catch (error) {
     return res.status(500).send(error.message);
   }
@@ -98,12 +99,12 @@ const removeBank = async(req, res) => {
             //validate params
     const bank_id = req.params.bank_id;
     if (!bank_id) {
-      return res.status(400).send("Please Try Again");
+      return res.status(400).send("เกิดข้อผิดพลาด ลองอีกครั้ง");
     }
 
     //cannot remove default value
     if (bank_id == 1) {
-      return res.status(405).send("Cannot Remove Default Value");
+      return res.status(405).send("ไม่สามารถแก้ไขค่าเริ่มต้นได้");
     }
 
     const remove = await Bank.destroy({
@@ -114,10 +115,10 @@ const removeBank = async(req, res) => {
 
     //if not found bank
     if (!remove) {
-        return res.status(404).send("No Bank Found.")
+        return res.status(400).send("ไม่พบธนาคาร")
     }
 
-    return res.status(200).send("Remove Bank Success.")
+    return res.status(200).send("ลบธนาคารสำเร็จ")
     } catch (error) {
         return res.status(500).send(error.message)
     }
