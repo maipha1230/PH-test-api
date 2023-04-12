@@ -42,10 +42,11 @@ UserHospital.belongsTo(Hospital, { foreignKey: 'hospital_id' })
 // sequelize.sync({ force: true });
 sequelize.sync();
 module.exports = {
+  sequelize: sequelize,
   Admin: Admin,
   User: User,
   Hospital: Hospital,
   Bank: Bank,
   UserBank: UserBank,
-  UserHospital: UserHospital
+  UserHospital: UserHospital,
 };

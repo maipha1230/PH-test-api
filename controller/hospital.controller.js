@@ -1,7 +1,7 @@
-const { Hospital } = require("../model/index.model");
+const { Hospital, UserHospital, User, sequelize } = require("../model/index.model");
 const { joiException } = require("../services/exception");
 const { validateHospital } = require("../services/validator");
-const { Op } = require("sequelize");
+const { Op, Sequelize } = require("sequelize");
 
 const getHospitals = async (req, res) => {
   try {
@@ -141,10 +141,47 @@ const removeHospital = async (req, res) => {
   }
 };
 
+const getUserInHospital = async(req, res) => {
+  try {
+    const hospital_id = req.params.hospital_id
+    if (!hospital_id) return res.status(400).send("ไม่พลผู้ใช้งาน")
+
+    const limit = req.params.limit
+    if (!limit) return res.status(400).send("ไม่พบการจำกัดข้อมูล")
+
+    const page = req.params.page
+    if (!page) return res.status(400).send("ไม่พบตำแหน่งหน้าของข้อมูล")
+
+    const count = await UserHospital.count({
+      where: {
+        hospital_id: hospital_id
+      }
+    })
+
+    const user_hospital = await UserHospital.findAll({
+      where: {
+        hospital_id: hospital_id
+      },
+      order: [['user_id', 'asc']],
+      include: [
+        {
+          model: User,
+        }
+      ],
+      limit: Number(limit),
+      offset: Number(page),
+    })
+    return res.status(200).send({count: count, user_hospital: user_hospital})
+  } catch (error) {
+    return res.status(500).send(error.message)
+  }
+} 
+
 module.exports = {
   getHospitals: getHospitals,
   getHospitalById: getHospitalById,
   createHospital: createHospital,
   updateHospital: updateHospital,
-  removeHospital: removeHospital
+  removeHospital: removeHospital,
+  getUserInHospital: getUserInHospital
 };

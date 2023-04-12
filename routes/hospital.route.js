@@ -38,4 +38,10 @@ router.delete(
   hospitalController.removeHospital
 );
 
+//get user in hospital
+router.get(
+  "/get-user-in-hospital/:hospital_id/:limit/:page",
+  hospitalController.getUserInHospital
+);
+
 module.exports = router;

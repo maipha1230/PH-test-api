@@ -81,9 +81,47 @@ const signIn = async(req, res) => {
     }
 }
 
+const changePassword = async(req, res) => {
+    try {
+        const { admin_id } = res.locals.admin_auth
+        if (!admin_id) return res.status(400).send("ไม่พบผู้ใช้งาน")
+
+        const { old_pass, new_pass } = req.body
+        if (!old_pass) return res.status(400).send("กรุณากรอกรหัสผ่านเดิม")
+        if (!new_pass) return res.status(400).send("กรุณากรอกรหัสผ่านใหม่")
+
+        let compare = await Admin.findOne({
+            where: {
+                admin_id: admin_id
+            }
+        })
+
+        let checkPassword = bcrypt.compareSync(old_pass, compare.password)
+        if (!checkPassword) return res.status(400).send("รหัสผ่านเดิมไม่ถูกต้อง")
+
+        let password = await bcrypt.hash(new_pass, 10)
+
+        const change = await Admin.update({
+            password: password
+        },
+        {
+            where: {
+                admin_id: admin_id
+            }
+        })
+
+        if (!change) return res.status(500).send("ไม่พบผู้ใช้งาน")
+        
+        return res.status(200).send("เปลี่ยนรหัสผ่านสำเร็จ")
+    } catch (error) {
+        return res.status(500).send(error.message)
+    }
+}
+
 
 module.exports = {
     signUp: signUp,
-    signIn, signIn
+    signIn, signIn,
+    changePassword: changePassword
 }
 

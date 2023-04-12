@@ -1,4 +1,4 @@
-const { Bank } = require("../model/index.model");
+const { Bank, UserBank } = require("../model/index.model");
 const { joiException } = require("../services/exception");
 const { validateBank } = require("../services/validator");
 const { Op } = require("sequelize");
@@ -107,6 +107,17 @@ const removeBank = async(req, res) => {
       return res.status(400).send("ไม่สามารถลบค่าเริ่มต้นได้");
     }
 
+    // change user bank to default
+    const chane_user_bank = await UserBank.update({
+      bank_id: 1
+    }, {
+      where: {
+        bank_id:bank_id
+      }
+    })
+
+    if (!chane_user_bank) return res.status(400).send("ไม่พบธนาคาร")
+    
     const remove = await Bank.destroy({
         where: {
             bank_id: bank_id
