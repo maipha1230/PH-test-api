@@ -35,3 +35,11 @@ const BankModel = joi.object({
 })
 
 exports.validateBank = validator(BankModel)
+
+const userBankModel = joi.object({
+  bank_id: joi.number().required(),
+  user_bank_code: joi.string().required(),
+  user_bank_name: joi.string().required()  
+})
+
+exports.validateUserBank = validator(userBankModel)

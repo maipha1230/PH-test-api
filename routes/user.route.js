@@ -51,4 +51,25 @@ router.post(
   userController.addOrRemoveUserHospital
 );
 
+//create user bank account
+router.post(
+  "/create-user-bank-account/:user_id",
+  authService.adminVerify,
+  userController.createUserBankAccount
+);
+
+//get user bank accounts
+router.get(
+  "/get-user-bank-accounts/:user_id",
+  authService.adminVerify,
+  userController.getUserBankAccounts
+);
+
+//remove user bank account
+router.delete(
+  "/remove-user-bank-account/:user_bank_id",
+  authService.adminVerify,
+  userController.removeUserBankAccount
+);
+
 module.exports = router;
