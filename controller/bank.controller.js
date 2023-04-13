@@ -25,6 +25,9 @@ const createBank = async (req, res) => {
 const getBanks = async (req, res) => {
   try {
     const bank = await Bank.findAll({
+      wher: {
+        bank_id: { [Op.ne]: 1}
+      },
       order: [["bank_id", "asc"]],
     });
     return res.status(200).send(bank);
