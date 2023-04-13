@@ -31,6 +31,6 @@ router.delete(
 );
 
 //get banks count
-router.get("/get-bank-count", authService.adminVerify, bankController.getBankCount)
+router.get("/get-user-bank-count", authService.adminVerify, bankController.getUserBankCount)
 
 module.exports = router;

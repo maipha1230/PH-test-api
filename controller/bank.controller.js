@@ -135,10 +135,10 @@ const removeBank = async(req, res) => {
     }
 }
 
-const getBankCount = async(req, res) => {
+const getUserBankCount = async(req, res) => {
   try {
-    const count = await Bank.count()
-    return res.status(200).send({count: count - 1})
+    const count = await UserBank.count()
+    return res.status(200).send({count: count })
   } catch (error) {
     return res.status(500).send(error.message)
   }
@@ -150,5 +150,5 @@ module.exports = {
     createBank: createBank,
     updateBank: updateBank,
     removeBank: removeBank,
-    getBankCount: getBankCount
+    getUserBankCount: getUserBankCount
 }
