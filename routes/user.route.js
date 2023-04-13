@@ -72,4 +72,10 @@ router.delete(
   userController.removeUserBankAccount
 );
 
+//get users count
+router.get("/get-user-count", authService.adminVerify, userController.getUserCount)
+
+//get admin count
+router.get('/get-admin-count', authService.adminVerify, userController.getAdminCount)
+
 module.exports = router;

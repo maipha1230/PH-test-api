@@ -4,6 +4,7 @@ const {
   UserHospital,
   UserBank,
   Bank,
+  Admin
 } = require("../model/index.model");
 const { joiException } = require("../services/exception");
 const { validateUser, validateUserBank } = require("../services/validator");
@@ -330,6 +331,24 @@ const removeUserBankAccount = async(req, res) => {
   }
 }
 
+const getUserCount = async(req, res) => {
+  try {
+    const count = await User.count()
+    return res.status(200).send({ count: count })
+  } catch (error) {
+    return res.status(500).send(error.message)
+  }
+}
+
+const getAdminCount = async(req, res) => {
+  try {
+    const count = await Admin.count()
+    return res.status(200).send({ count: count })
+  } catch (error) {
+    return res.status(500).send(error.message)
+  }
+}
+
 module.exports = {
   createUser: createUser,
   getUsers: getUsers,
@@ -341,5 +360,7 @@ module.exports = {
   addOrRemoveUserHospital: addOrRemoveUserHospital,
   createUserBankAccount: createUserBankAccount,
   getUserBankAccounts: getUserBankAccounts,
-  removeUserBankAccount: removeUserBankAccount
+  removeUserBankAccount: removeUserBankAccount,
+  getUserCount: getUserCount,
+  getAdminCount: getAdminCount  
 };

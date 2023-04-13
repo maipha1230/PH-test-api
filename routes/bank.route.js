@@ -30,4 +30,7 @@ router.delete(
   bankController.removeBank
 );
 
+//get banks count
+router.get("/get-bank-count", authService.adminVerify, bankController.getBankCount)
+
 module.exports = router;

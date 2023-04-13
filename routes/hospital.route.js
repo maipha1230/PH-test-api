@@ -44,4 +44,10 @@ router.get(
   hospitalController.getUserInHospital
 );
 
+//get hospital count
+router.get('/get-hospital-count', authService.adminVerify, hospitalController.getHospitalCount)
+
+//get hospital user chart
+router.get('/get-hospital-user-chart', authService.adminVerify, hospitalController.getHospitaUserChart)
+
 module.exports = router;

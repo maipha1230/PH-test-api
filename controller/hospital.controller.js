@@ -177,11 +177,41 @@ const getUserInHospital = async(req, res) => {
   }
 } 
 
+const getHospitalCount = async(req, res) => {
+  try {
+    const count = await Hospital.count()
+    return res.status(200).send({ count: count })
+  } catch (error) {
+    return res.status(500).send(error.message)
+  }
+}
+
+const getHospitaUserChart = async(req, res) => {
+  try {
+    const hospital_chart = await sequelize.query(
+    `
+      SELECT  COUNT(*) as count,
+              hospital.hospital_name_th,
+              hospital.hospital_name_en
+      FROM user_hospital
+      INNER JOIN hospital ON hospital.hospital_id = user_hospital.hospital_id
+      GROUP BY user_hospital.user_id
+    `)
+
+    return res.status(200).send(hospital_chart[0])
+  } catch (error) {
+    return res.status(500).send(error.message)
+  }
+}
+
 module.exports = {
   getHospitals: getHospitals,
   getHospitalById: getHospitalById,
   createHospital: createHospital,
   updateHospital: updateHospital,
   removeHospital: removeHospital,
-  getUserInHospital: getUserInHospital
+  getUserInHospital: getUserInHospital,
+  getHospitalCount: getHospitalCount,
+  getHospitaUserChart: getHospitaUserChart
+  
 };
