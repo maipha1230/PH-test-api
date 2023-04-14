@@ -204,6 +204,40 @@ const getHospitaUserChart = async(req, res) => {
   }
 }
 
+const checkHospitalCodeExist = async(req, res) => {
+  try {
+    const hospital_id = req.query.hospital_id
+    const hospital_code = req.body.hospital_code
+    console.log(req.body);
+
+    if (!hospital_id) {
+      const exist = await Hospital.findOne({
+        where: {
+          hospital_code: hospital_code
+        }
+      })
+      if (exist) {
+        return res.status(200).send(`${hospital_code} ถูกใช้งานแล้ว`)
+      }
+      return res.status(200).send(null)
+    } else {
+      const exist = await Hospital.findOne({
+        where: {
+          hospital_code: hospital_code,
+          hospital_id: { [Op.ne]: hospital_id }
+        }
+      })
+      if (exist) {
+        return res.status(200).send(`${hospital_code} ถูกใช้งานแล้ว`)
+      }
+      return res.status(200).send(null)
+    }
+  } catch (error) {
+    return res.status(500).send(error.message)
+  }
+}
+
+
 module.exports = {
   getHospitals: getHospitals,
   getHospitalById: getHospitalById,
@@ -212,6 +246,7 @@ module.exports = {
   removeHospital: removeHospital,
   getUserInHospital: getUserInHospital,
   getHospitalCount: getHospitalCount,
-  getHospitaUserChart: getHospitaUserChart
+  getHospitaUserChart: getHospitaUserChart,
+  checkHospitalCodeExist: checkHospitalCodeExist
   
 };

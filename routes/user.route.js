@@ -58,6 +58,13 @@ router.post(
   userController.createUserBankAccount
 );
 
+//edit user bank account
+router.put(
+  "/edit-user-bank-account/:user_id/:user_bank_id",
+  authService.adminVerify,
+  userController.editUserBankAccount
+);
+
 //get user bank accounts
 router.get(
   "/get-user-bank-accounts/:user_id",
@@ -73,9 +80,24 @@ router.delete(
 );
 
 //get users count
-router.get("/get-user-count", authService.adminVerify, userController.getUserCount)
+router.get(
+  "/get-user-count",
+  authService.adminVerify,
+  userController.getUserCount
+);
 
 //get admin count
-router.get('/get-admin-count', authService.adminVerify, userController.getAdminCount)
+router.get(
+  "/get-admin-count",
+  authService.adminVerify,
+  userController.getAdminCount
+);
+
+// check user code exist
+router.post(
+  "/check-user-code-exist",
+  authService.adminVerify,
+  userController.checkUserCodeExist
+);
 
 module.exports = router;

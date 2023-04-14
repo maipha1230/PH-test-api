@@ -50,4 +50,7 @@ router.get('/get-hospital-count', authService.adminVerify, hospitalController.ge
 //get hospital user chart
 router.get('/get-hospital-user-chart', authService.adminVerify, hospitalController.getHospitaUserChart)
 
+//check hospital code exist
+router.post('/check-hospital-code-exist', authService.adminVerify, hospitalController.checkHospitalCodeExist)
+
 module.exports = router;

@@ -4,7 +4,7 @@ const {
   UserHospital,
   UserBank,
   Bank,
-  Admin
+  Admin,
 } = require("../model/index.model");
 const { joiException } = require("../services/exception");
 const { validateUser, validateUserBank } = require("../services/validator");
@@ -294,6 +294,40 @@ const createUserBankAccount = async (req, res) => {
   }
 };
 
+const editUserBankAccount = async (req, res) => {
+  try {
+    const user_id = req.params.user_id;
+    if (!user_id) return res.status(400).send("ไม่พบผู้ใช้งาน");
+
+    const user_bank_id = req.params.user_bank_id;
+    if (!user_bank_id) return res.status(400).send("ไม่พบสมุดบัญชี");
+
+    const { error } = validateUserBank(req.body);
+    if (error) {
+      return res.status(400).send(joiException(error.details));
+    }
+
+    const { bank_id, user_bank_code, user_bank_name } = req.body;
+
+    const user_bank = await UserBank.update({
+      bank_id: bank_id,
+      user_id: user_id,
+      user_bank_code: user_bank_code,
+      user_bank_name: user_bank_name,
+    }, {
+      where: {
+        user_bank_id: user_bank_id
+      }
+    });
+    if (!user_bank) {
+      return res.status(400).send("เกิดข้อผิดพลาด กรุณาลองอีกครั้ง");
+    }
+    return res.status(201).send("แก้ไขบัญชีผูู้ใช้งานสำเร็จ");
+  } catch (error) {
+    return res.status(500).send(error.message);
+  }
+};
+
 const getUserBankAccounts = async (req, res) => {
   try {
     const user_id = req.params.user_id;
@@ -305,49 +339,84 @@ const getUserBankAccounts = async (req, res) => {
       where: {
         user_id: user_id,
       },
-      include: [{ model: Bank, attributes: ['bank_name_th', 'bank_name_en'] }],
+      include: [
+        {
+          model: Bank,
+        },
+      ],
     });
-    return res.status(200).send(user_bank )
+    return res.status(200).send(user_bank);
   } catch (error) {
     return res.status(500).send(error.message);
   }
 };
 
-const removeUserBankAccount = async(req, res) => {
+const removeUserBankAccount = async (req, res) => {
   try {
-    const user_bank_id = req.params.user_bank_id
-    if (!user_bank_id) return res.status(400).send("ไม่พบสมุดบัญชี")
+    const user_bank_id = req.params.user_bank_id;
+    if (!user_bank_id) return res.status(400).send("ไม่พบสมุดบัญชี");
 
     const remove = await UserBank.destroy({
       where: {
-        user_bank_id: user_bank_id
+        user_bank_id: user_bank_id,
+      },
+    });
+    if (!remove) return res.status(400).send("ไม่พบสมุดบัญชี");
+
+    return res.status(200).send("ลบสมุดบัญชีผู้ใช้งานสำเร็จ");
+  } catch (error) {
+    return res.status(500).send(error.message);
+  }
+};
+
+const getUserCount = async (req, res) => {
+  try {
+    const count = await User.count();
+    return res.status(200).send({ count: count });
+  } catch (error) {
+    return res.status(500).send(error.message);
+  }
+};
+
+const getAdminCount = async (req, res) => {
+  try {
+    const count = await Admin.count();
+    return res.status(200).send({ count: count });
+  } catch (error) {
+    return res.status(500).send(error.message);
+  }
+};
+
+const checkUserCodeExist = async (req, res) => {
+  try {
+    const user_id = req.query.user_id;
+    const user_code = req.body.user_code;
+    if (!user_id) {
+      const exist = await User.findOne({
+        where: {
+          user_code: user_code,
+        },
+      });
+      if (exist) {
+        return res.status(200).send(`${user_code} ถูกใช้งานแล้ว`);
       }
-    })
-    if (!remove) return res.status(400).send("ไม่พบสมุดบัญชี")
-
-    return res.status(200).send("ลบสมุดบัญชีผู้ใช้งานสำเร็จ")
+      return res.status(200).send(null);
+    } else {
+      const exist = await User.findOne({
+        where: {
+          user_code: user_code,
+          user_id: { [Op.ne]: user_id },
+        },
+      });
+      if (exist) {
+        return res.status(200).send(`${user_code} ถูกใช้งานแล้ว`);
+      }
+      return res.status(200).send(null);
+    }
   } catch (error) {
-    return res.status(500).send(error.message)
+    return res.status(500).send(error.message);
   }
-}
-
-const getUserCount = async(req, res) => {
-  try {
-    const count = await User.count()
-    return res.status(200).send({ count: count })
-  } catch (error) {
-    return res.status(500).send(error.message)
-  }
-}
-
-const getAdminCount = async(req, res) => {
-  try {
-    const count = await Admin.count()
-    return res.status(200).send({ count: count })
-  } catch (error) {
-    return res.status(500).send(error.message)
-  }
-}
+};
 
 module.exports = {
   createUser: createUser,
@@ -359,8 +428,10 @@ module.exports = {
   getUserHospital: getUserHospital,
   addOrRemoveUserHospital: addOrRemoveUserHospital,
   createUserBankAccount: createUserBankAccount,
+  editUserBankAccount: editUserBankAccount,
   getUserBankAccounts: getUserBankAccounts,
   removeUserBankAccount: removeUserBankAccount,
   getUserCount: getUserCount,
-  getAdminCount: getAdminCount  
+  getAdminCount: getAdminCount,
+  checkUserCodeExist: checkUserCodeExist,
 };
