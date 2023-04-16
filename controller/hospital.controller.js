@@ -195,7 +195,7 @@ const getHospitaUserChart = async(req, res) => {
               hospital.hospital_name_en
       FROM user_hospital
       INNER JOIN hospital ON hospital.hospital_id = user_hospital.hospital_id
-      GROUP BY user_hospital.user_id
+      GROUP BY user_hospital.hospital_id
     `)
 
     return res.status(200).send(hospital_chart[0])
