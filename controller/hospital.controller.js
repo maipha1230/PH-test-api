@@ -1,4 +1,9 @@
-const { Hospital, UserHospital, User, sequelize } = require("../model/index.model");
+const {
+  Hospital,
+  UserHospital,
+  User,
+  sequelize,
+} = require("../model/index.model");
 const { joiException } = require("../services/exception");
 const { validateHospital } = require("../services/validator");
 const { Op, Sequelize } = require("sequelize");
@@ -23,7 +28,7 @@ const getHospitalById = async (req, res) => {
     const hospital = await Hospital.findOne({
       where: {
         hospital_id: hospital_id,
-      } 
+      },
     });
 
     if (!hospital) {
@@ -141,102 +146,102 @@ const removeHospital = async (req, res) => {
   }
 };
 
-const getUserInHospital = async(req, res) => {
+const getUserInHospital = async (req, res) => {
   try {
-    const hospital_id = req.params.hospital_id
-    if (!hospital_id) return res.status(400).send("ไม่พลผู้ใช้งาน")
+    const hospital_id = req.params.hospital_id;
+    if (!hospital_id) return res.status(400).send("ไม่พลผู้ใช้งาน");
 
-    const limit = req.params.limit
-    if (!limit) return res.status(400).send("ไม่พบการจำกัดข้อมูล")
+    const limit = req.params.limit;
+    if (!limit) return res.status(400).send("ไม่พบการจำกัดข้อมูล");
 
-    const page = req.params.page
-    if (!page) return res.status(400).send("ไม่พบตำแหน่งหน้าของข้อมูล")
+    const page = req.params.page;
+    if (!page) return res.status(400).send("ไม่พบตำแหน่งหน้าของข้อมูล");
 
     const count = await UserHospital.count({
       where: {
-        hospital_id: hospital_id
-      }
-    })
+        hospital_id: hospital_id,
+      },
+    });
 
     const user_hospital = await UserHospital.findAll({
       where: {
-        hospital_id: hospital_id
+        hospital_id: hospital_id,
       },
-      order: [['user_id', 'asc']],
+      order: [["user_id", "asc"]],
       include: [
         {
           model: User,
-        }
+        },
       ],
       limit: Number(limit),
       offset: Number(page),
-    })
-    return res.status(200).send({count: count, user_hospital: user_hospital})
+    });
+    return res.status(200).send({ count: count, user_hospital: user_hospital });
   } catch (error) {
-    return res.status(500).send(error.message)
+    return res.status(500).send(error.message);
   }
-} 
+};
 
-const getHospitalCount = async(req, res) => {
+const getHospitalCount = async (req, res) => {
   try {
-    const count = await Hospital.count()
-    return res.status(200).send({ count: count })
+    const count = await Hospital.count();
+    return res.status(200).send({ count: count });
   } catch (error) {
-    return res.status(500).send(error.message)
+    return res.status(500).send(error.message);
   }
-}
+};
 
-const getHospitaUserChart = async(req, res) => {
+const getHospitaUserChart = async (req, res) => {
   try {
     const hospital_chart = await sequelize.query(
+      `
+    SELECT  COUNT(user_hospital.user_id) as count,
+    hospital.hospital_name_th,
+    hospital.hospital_name_en
+    FROM user_hospital
+    RIGHT JOIN hospital ON hospital.hospital_id = user_hospital.hospital_id
+    GROUP BY user_hospital.hospital_id
     `
-      SELECT  COUNT(*) as count,
-              hospital.hospital_name_th,
-              hospital.hospital_name_en
-      FROM user_hospital
-      INNER JOIN hospital ON hospital.hospital_id = user_hospital.hospital_id
-      GROUP BY user_hospital.hospital_id
-    `)
+    );
 
-    return res.status(200).send(hospital_chart[0])
+    return res.status(200).send(hospital_chart[0]);
   } catch (error) {
-    return res.status(500).send(error.message)
+    return res.status(500).send(error.message);
   }
-}
+};
 
-const checkHospitalCodeExist = async(req, res) => {
+const checkHospitalCodeExist = async (req, res) => {
   try {
-    const hospital_id = req.query.hospital_id
-    const hospital_code = req.body.hospital_code
+    const hospital_id = req.query.hospital_id;
+    const hospital_code = req.body.hospital_code;
     console.log(req.body);
 
     if (!hospital_id) {
       const exist = await Hospital.findOne({
         where: {
-          hospital_code: hospital_code
-        }
-      })
+          hospital_code: hospital_code,
+        },
+      });
       if (exist) {
-        return res.status(200).send(`${hospital_code} ถูกใช้งานแล้ว`)
+        return res.status(200).send(`${hospital_code} ถูกใช้งานแล้ว`);
       }
-      return res.status(200).send(null)
+      return res.status(200).send(null);
     } else {
       const exist = await Hospital.findOne({
         where: {
           hospital_code: hospital_code,
-          hospital_id: { [Op.ne]: hospital_id }
-        }
-      })
+          hospital_id: { [Op.ne]: hospital_id },
+        },
+      });
       if (exist) {
-        return res.status(200).send(`${hospital_code} ถูกใช้งานแล้ว`)
+        return res.status(200).send(`${hospital_code} ถูกใช้งานแล้ว`);
       }
-      return res.status(200).send(null)
+      return res.status(200).send(null);
     }
   } catch (error) {
-    return res.status(500).send(error.message)
+    return res.status(500).send(error.message);
   }
-}
-
+};
 
 module.exports = {
   getHospitals: getHospitals,
@@ -247,6 +252,5 @@ module.exports = {
   getUserInHospital: getUserInHospital,
   getHospitalCount: getHospitalCount,
   getHospitaUserChart: getHospitaUserChart,
-  checkHospitalCodeExist: checkHospitalCodeExist
-  
+  checkHospitalCodeExist: checkHospitalCodeExist,
 };
