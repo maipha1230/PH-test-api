@@ -9,6 +9,9 @@ router.post("/create-bank", authService.adminVerify, bankController.createBank);
 //get banks
 router.get("/get-banks", authService.adminVerify, bankController.getBanks);
 
+//get banks to select
+router.get('/get-bank-select', authService.adminVerify, bankController.getBankSelect)
+
 //get bank by id
 router.get(
   "/get-bank/:bank_id",

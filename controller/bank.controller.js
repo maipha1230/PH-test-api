@@ -36,6 +36,17 @@ const getBanks = async (req, res) => {
   }
 };
 
+const getBankSelect = async(req, res) => {
+  try {
+    const bank = await Bank.findAll({
+      order: [["bank_id", "asc"]],
+    });
+    return res.status(200).send(bank);
+  } catch (error) {
+    return res.status(500).send(error.message)
+  }
+}
+
 const getBankById = async (req, res) => {
   try {
     //validate params
@@ -149,6 +160,7 @@ const getUserBankCount = async(req, res) => {
 
 module.exports = {
     getBanks: getBanks,
+    getBankSelect: getBankSelect,
     getBankById: getBankById,
     createBank: createBank,
     updateBank: updateBank,
