@@ -1,8 +1,12 @@
 # PH-test-api
  
-สามารถทดสอบระบบได้ที่ http://203.158.201.117/
+สามารถทดสอบระบบได้ที่ http://203.158.201.117/ (username: admin, password: princh@admin)
 
-หรือ แก้ไฟล์ .env 
+หากต้องการรันบน localhost 
+
+ทำการ import ไฟล์ ph-test_db ลง database
+
+แก้ไฟล์ .env 
 
 PORT = 3001 // port ของ server
 
@@ -16,4 +20,5 @@ JWT_SECRET = "ph-test" // secret ของ jwt
 
 ในส่วนของ host database จะทำการรันบน localhost หรือ 127.0.0.1
 
+ในการรันบน localhost จะใช้ username: admin, password: princh@dmin
 
