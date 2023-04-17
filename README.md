@@ -4,7 +4,7 @@
 
 หากต้องการรันบน localhost 
 
-ทำการ import ไฟล์ ph-test_db ลง database
+ทำการ import ไฟล์ ph-test_db.sql ลง database
 
 แก้ไฟล์ .env 
 
