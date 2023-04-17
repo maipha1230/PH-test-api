@@ -20,5 +20,7 @@ JWT_SECRET = "ph-test" // secret ของ jwt
 
 ในส่วนของ host database จะทำการรันบน localhost หรือ 127.0.0.1
 
+จากนั้นที่ termial พิมพ์ npm install เพื่อติดตั้ง package และ npm start เพื่อรันโปรเจกต์
+
 ในการรันบน localhost จะใช้ username: admin, password: princh@dmin
 
