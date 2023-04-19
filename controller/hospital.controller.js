@@ -171,6 +171,9 @@ const getUserInHospital = async (req, res) => {
       include: [
         {
           model: User,
+          where: {
+            user_status: 1
+          }
         },
       ],
       limit: Number(limit),
@@ -195,12 +198,13 @@ const getHospitaUserChart = async (req, res) => {
   try {
     const hospital_chart = await sequelize.query(
       `
-    SELECT  COUNT(user_hospital.user_id) as count,
-    hospital.hospital_name_th,
-    hospital.hospital_name_en
-    FROM user_hospital
-    RIGHT JOIN hospital ON hospital.hospital_id = user_hospital.hospital_id
-    GROUP BY user_hospital.hospital_id
+      SELECT COUNT(CASE WHEN user.user_status = 1 THEN user_hospital.user_id END) as count,
+              hospital.hospital_name_th,
+              hospital.hospital_name_en
+      FROM hospital
+      LEFT JOIN user_hospital ON hospital.hospital_id = user_hospital.hospital_id
+      LEFT JOIN user ON user_hospital.user_id = user.user_id
+      GROUP BY hospital.hospital_id;
     `
     );
 
