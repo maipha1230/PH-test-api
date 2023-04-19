@@ -17,6 +17,7 @@ const userModel = joi.object({
     user_lastname_th: joi.string().required(),
     user_firstname_en: joi.string().required(),
     user_lastname_en: joi.string().required(),
+    user_status: joi.number().required()
 })
 
 exports.validateUser = validator(userModel);

@@ -59,6 +59,7 @@ const createUser = async (req, res) => {
       user_lastname_th,
       user_firstname_en,
       user_lastname_en,
+      user_status
     } = req.body;
 
     const exist = await User.findOne({
@@ -79,7 +80,7 @@ const createUser = async (req, res) => {
       user_lastname_th: user_lastname_th,
       user_firstname_en: user_firstname_en,
       user_lastname_en: user_lastname_en,
-      user_status: 1,
+      user_status: user_status
     });
 
     return res.status(201).send("เพิ่มผู้ใช้งานสำเร็จ");
@@ -110,6 +111,7 @@ const updateUser = async (req, res) => {
       user_lastname_th,
       user_firstname_en,
       user_lastname_en,
+      user_status
     } = req.body;
 
     const exist = await User.findOne({
@@ -132,6 +134,7 @@ const updateUser = async (req, res) => {
         user_lastname_th: user_lastname_th,
         user_firstname_en: user_firstname_en,
         user_lastname_en: user_lastname_en,
+        user_status: user_status
       },
       {
         where: {
